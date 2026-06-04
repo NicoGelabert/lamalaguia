@@ -23,6 +23,7 @@ Guía y comunidad online para argentinos en Málaga y Andalucía. Incluye inform
 | Vite | ^8.0.0 |
 | Tailwind CSS | ^3.2.1 |
 | vue-tsc | ^2.0.24 |
+| Pinia | ^3.0.4 |
 
 ### Entorno de desarrollo
 | Herramienta | Versión |
