@@ -12,6 +12,8 @@ class CategoriaNegocio extends Model
         'icono',
     ];
 
+    protected $table = 'categoria_negocios';
+
     public function negocios()
     {
         return $this->hasMany(Negocio::class);
