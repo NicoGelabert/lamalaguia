@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class EventoRequest extends FormRequest
 {
@@ -15,7 +16,7 @@ class EventoRequest extends FormRequest
     {
         return [
             'nombre'      => ['required', 'string', 'max:150'],
-            'slug'        => ['required', 'string', 'max:100'],
+            'slug'        => ['required', 'string', 'max:150', Rule::unique('eventos', 'slug')->ignore($this->route('evento'))],
             'descripcion' => ['nullable', 'string'],
             'fecha'       => ['required', 'date'],
             'lugar'       => ['nullable', 'string', 'max:255'],

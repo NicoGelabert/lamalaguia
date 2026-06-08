@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class NegocioRequest extends FormRequest
 {
@@ -15,7 +16,7 @@ class NegocioRequest extends FormRequest
     {
         return [
             'nombre' => ['required', 'string', 'max:100'],
-            'slug' => ['required', 'string', 'max:100'],
+            'slug' => ['required', 'string', 'max:100', Rule::unique('negocios', 'slug')->ignore($this->route('negocio'))],
             'descripcion' => ['nullable', 'string'],
             'direccion' => ['nullable', 'string', 'max:255'],
             'ciudad' => ['nullable', 'string', 'max:100'],
