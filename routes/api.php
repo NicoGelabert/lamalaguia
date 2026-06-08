@@ -3,9 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\NegocioController;
 use App\Http\Controllers\Api\CategoriaNegocioController;
+use App\Http\Controllers\Api\NegocioController;
 use App\Http\Controllers\Api\EventoController;
+use App\Http\Controllers\Api\TramiteController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -23,3 +24,9 @@ Route::get('eventos/{evento}', [EventoController::class, 'show'])->name('api.eve
 Route::post('eventos', [EventoController::class, 'store'])->name('api.eventos.store');
 Route::put('eventos/{evento}', [EventoController::class, 'update'])->name('api.eventos.update');
 Route::delete('eventos/{evento}', [EventoController::class, 'destroy'])->name('api.eventos.destroy');
+
+Route::get('tramites', [TramiteController::class, 'index'])->name('api.tramites.index');
+Route::get('tramites/{tramite}', [TramiteController::class, 'show'])->name('api.tramites.show');
+Route::post('tramites', [TramiteController::class, 'store'])->name('api.tramites.store');
+Route::put('tramites/{tramite}', [TramiteController::class, 'update'])->name('api.tramites.update');
+Route::delete('tramites/{tramite}', [TramiteController::class, 'destroy'])->name('api.tramites.destroy');

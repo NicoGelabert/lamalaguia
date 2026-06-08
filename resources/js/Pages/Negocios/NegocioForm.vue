@@ -149,7 +149,10 @@ function generateSlug() {
 
 function onLogoChange(e: Event) {
     const file = (e.target as HTMLInputElement).files?.[0];
-    if (file) form.value.logo = file;
+    if (file) {
+        form.value.logo = file;
+        form.value.logo_url = URL.createObjectURL(file);
+    }
 }
 
 function onImagenesChange(e: Event) {

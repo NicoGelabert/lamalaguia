@@ -13,5 +13,8 @@ class Tramite extends Model
         'categoria',
         'orden',
         'activo',
+        'imagen',
+        'imagen_mime',
+        'imagen_size',
     ];
 }

@@ -110,7 +110,10 @@ function generateSlug() {
 
 function onImagenChange(e: Event) {
     const file = (e.target as HTMLInputElement).files?.[0];
-    if (file) form.value.imagen = file;
+    if (file) {
+        form.value.imagen = file;
+        form.value.imagen_url = URL.createObjectURL(file);
+    }
 }
 
 function onImagenesChange(e: Event) {

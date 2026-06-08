@@ -51,6 +51,12 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Eventos
                                 </NavLink>
+                                <NavLink
+                                    :href="route('tramites.index')"
+                                    :active="route().current('tramites.*')"
+                                >
+                                    Trámites
+                                </NavLink>
                             </div>
                         </div>
 
@@ -169,6 +175,12 @@ const showingNavigationDropdown = ref(false);
                             :active="route().current('eventos.*')"
                         >
                             Eventos
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('tramites.index')"
+                            :active="route().current('tramites.*')"
+                        >
+                            Trámites
                         </ResponsiveNavLink>
                     </div>
 
