@@ -22,6 +22,7 @@ app/
       NegocioListResource.php       ← Respuesta resumida (tabla)
   Models/
     Negocio.php                     ← Modelo principal
+    NegocioImagen.php               ← Modelo de imágenes
     CategoriaNegocio.php
     Api/
       Negocio.php                   ← Modelo API (extiende el principal)
@@ -79,11 +80,34 @@ public function up(): void
         $table->string('nombre');
         $table->string('slug')->unique();
         $table->text('descripcion')->nullable();
+        $table->string('logo')->nullable();
+        $table->string('logo_mime')->nullable();
+        $table->integer('logo_size')->nullable();
         $table->boolean('activo')->default(true);
         $table->timestamps();
     });
 }
 ```
+
+### Si la entidad tiene imágenes múltiples, crear tabla aparte:
+
+```bash
+php artisan make:model NombreEntidadImagen -m
+```
+
+```php
+Schema::create('nombre_entidad_imagenes', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('nombre_entidad_id')->constrained()->cascadeOnDelete();
+    $table->string('ruta');
+    $table->string('mime')->nullable();
+    $table->integer('size')->nullable();
+    $table->integer('orden')->default(0);
+    $table->timestamps();
+});
+```
+
+> **Importante:** Laravel pluraliza en inglés. Si el nombre queda mal (ej: `imagens`), especificá `protected $table = 'nombre_correcto'` en el modelo y corregilo en la migration.
 
 ```bash
 php artisan migrate
@@ -123,6 +147,7 @@ php artisan make:request NombreEntidadRequest
 
 - `authorize()` devuelve `true`
 - `rules()` define las validaciones de cada campo
+- Para imágenes usar `mimes` en lugar de `image` para aceptar SVG:
 
 ```php
 public function authorize(): bool
@@ -133,9 +158,11 @@ public function authorize(): bool
 public function rules(): array
 {
     return [
-        'nombre' => ['required', 'string', 'max:100'],
-        'activo' => ['required', 'boolean'],
-        // ...
+        'nombre'  => ['required', 'string', 'max:100'],
+        'activo'  => ['required', 'boolean'],
+        'logo'    => ['nullable', 'mimes:jpg,jpeg,png,gif,webp,svg', 'max:2048'],
+        'imagenes'   => ['nullable', 'array'],
+        'imagenes.*' => ['mimes:jpg,jpeg,png,gif,webp,svg', 'max:2048'],
     ];
 }
 ```
@@ -154,8 +181,8 @@ php artisan make:resource NombreEntidadListResource
 public function toArray(Request $request): array
 {
     return [
-        'id' => $this->id,
-        'nombre' => $this->nombre,
+        'id'         => $this->id,
+        'nombre'     => $this->nombre,
         'updated_at' => (new \DateTime($this->updated_at))->format('Y-m-d H:i:s'),
     ];
 }
@@ -166,9 +193,15 @@ public function toArray(Request $request): array
 public function toArray(Request $request): array
 {
     return [
-        'id' => $this->id,
-        'nombre' => $this->nombre,
-        'activo' => (bool) $this->activo,   // ← cast a bool para el checkbox
+        'id'      => $this->id,
+        'nombre'  => $this->nombre,
+        'activo'  => (bool) $this->activo,
+        'logo_url' => $this->logo ? asset('storage/' . $this->logo) : null,
+        'imagenes' => $this->imagenes?->map(fn($img) => [
+            'id'    => $img->id,
+            'url'   => asset('storage/' . $img->ruta),
+            'orden' => $img->orden,
+        ]),
         // ...
     ];
 }
@@ -184,50 +217,130 @@ public function toArray(Request $request): array
 php artisan make:controller Api/NombreEntidadController
 ```
 
-Métodos estándar:
+### Con manejo de imágenes:
 
 ```php
-public function index()
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\NegocioRequest;
+use App\Http\Resources\NegocioListResource;
+use App\Http\Resources\NegocioResource;
+use App\Models\Negocio;
+use App\Models\NegocioImagen;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
+class NegocioController extends Controller
 {
-    $perPage = request('per_page', 10);
-    $search = request('search', '');
-    $sortField = request('sort_field', 'created_at');
-    $sortDirection = request('sort_direction', 'desc');
+    public function index()
+    {
+        $perPage       = request('per_page', 10);
+        $search        = request('search', '');
+        $sortField     = request('sort_field', 'created_at');
+        $sortDirection = request('sort_direction', 'desc');
 
-    $query = Negocio::query()
-        ->with('categoria')                          // eager load relaciones
-        ->where('nombre', 'like', "%{$search}%")
-        ->orderBy($sortField, $sortDirection)
-        ->paginate($perPage);
+        $query = Negocio::query()
+            ->with('categoria')
+            ->where('nombre', 'like', "%{$search}%")
+            ->orderBy($sortField, $sortDirection)
+            ->paginate($perPage);
 
-    return NegocioListResource::collection($query);
-}
+        return NegocioListResource::collection($query);
+    }
 
-public function store(NegocioRequest $request)
-{
-    $data = $request->validated();
-    $negocio = Negocio::create($data);
-    return new NegocioResource($negocio->load('categoria'));
-}
+    public function store(NegocioRequest $request)
+    {
+        $data = $request->validated();
 
-public function show(Negocio $negocio)
-{
-    return new NegocioResource($negocio->load('categoria'));
-}
+        if ($request->hasFile('logo')) {
+            $data = array_merge($data, $this->saveLogo($request->file('logo')));
+        }
 
-public function update(NegocioRequest $request, Negocio $negocio)
-{
-    $data = $request->validated();
-    $negocio->update($data);
-    return new NegocioResource($negocio->load('categoria'));
-}
+        $negocio = Negocio::create($data);
 
-public function destroy(Negocio $negocio)
-{
-    $negocio->delete();
-    return response()->noContent();
+        if ($request->hasFile('imagenes')) {
+            $this->saveImagenes($negocio, $request->file('imagenes'));
+        }
+
+        return new NegocioResource($negocio->load(['categoria', 'imagenes']));
+    }
+
+    public function show(Negocio $negocio)
+    {
+        return new NegocioResource($negocio->load(['categoria', 'imagenes']));
+    }
+
+    public function update(NegocioRequest $request, Negocio $negocio)
+    {
+        $data = $request->validated();
+
+        if ($request->hasFile('logo')) {
+            if ($negocio->logo) {
+                Storage::disk('public')->delete($negocio->logo);
+            }
+            $data = array_merge($data, $this->saveLogo($request->file('logo')));
+        }
+
+        $negocio->update($data);
+
+        if ($request->hasFile('imagenes')) {
+            $this->saveImagenes($negocio, $request->file('imagenes'));
+        }
+
+        return new NegocioResource($negocio->load(['categoria', 'imagenes']));
+    }
+
+    public function destroy(Negocio $negocio)
+    {
+        if ($negocio->logo) {
+            Storage::disk('public')->delete($negocio->logo);
+        }
+        foreach ($negocio->imagenes as $imagen) {
+            Storage::disk('public')->delete($imagen->ruta);
+        }
+        $negocio->delete();
+        return response()->noContent();
+    }
+
+    private function saveLogo(UploadedFile $file): array
+    {
+        $path     = 'negocios/logos/' . Str::random(10);
+        $filename = $file->getClientOriginalName();
+        Storage::disk('public')->makeDirectory($path);
+        Storage::disk('public')->putFileAs($path, $file, $filename);
+
+        return [
+            'logo'      => $path . '/' . $filename,
+            'logo_mime' => $file->getClientMimeType(),
+            'logo_size' => $file->getSize(),
+        ];
+    }
+
+    private function saveImagenes(Negocio $negocio, array $files): void
+    {
+        foreach ($files as $index => $file) {
+            $path     = 'negocios/' . $negocio->id . '/imagenes/' . Str::random(10);
+            $filename = $file->getClientOriginalName();
+            Storage::disk('public')->makeDirectory($path);
+            Storage::disk('public')->putFileAs($path, $file, $filename);
+
+            NegocioImagen::create([
+                'negocio_id' => $negocio->id,
+                'ruta'       => $path . '/' . $filename,
+                'mime'       => $file->getClientMimeType(),
+                'size'       => $file->getSize(),
+                'orden'      => $index,
+            ]);
+        }
+    }
 }
 ```
+
+> **Importante:** Usar siempre `Storage::disk('public')` en lugar de `Storage::` para evitar errores 403 al servir archivos.
 
 ---
 
@@ -307,6 +420,11 @@ Route::put('nombre-entidad/{entidad}', [NombreEntidadController::class, 'update'
 Route::delete('nombre-entidad/{entidad}', [NombreEntidadController::class, 'destroy']);
 ```
 
+> **Importante:** Si hay dos `Route::resource` con el mismo nombre (web y api), los nombres de rutas colisionan. Renombrá las rutas de la API con el prefijo `api.`:
+> ```php
+> Route::post('negocios', [NegocioController::class, 'store'])->name('api.negocios.store');
+> ```
+
 ---
 
 ## Paso 9 — Store Pinia
@@ -353,12 +471,41 @@ export const useNombreEntidadStore = defineStore('nombre-entidad', {
             return axios.get(`/api/nombre-entidad/${id}`);
         },
 
+        // Con soporte para imágenes (FormData)
+        toFormData(data: any): FormData {
+            const form = new FormData();
+            for (const key in data) {
+                if (data[key] === null || data[key] === undefined) continue;
+                if (key === 'nuevasImagenes' && Array.isArray(data[key])) {
+                    data[key].forEach((file: File) => form.append('imagenes[]', file));
+                } else if (key === 'imagenes') {
+                    continue; // imágenes existentes no se reenvían
+                } else if (key === 'logo' && data[key] instanceof File) {
+                    form.append('logo', data[key]);
+                } else if (key === 'logo') {
+                    continue; // URL del logo existente no se reenvía
+                } else if (typeof data[key] === 'boolean') {
+                    form.append(key, data[key] ? '1' : '0'); // booleanos como enteros
+                } else {
+                    form.append(key, data[key]);
+                }
+            }
+            return form;
+        },
+
         async createEntidad(data: any) {
-            return axios.post('/api/nombre-entidad', data);
+            const form = this.toFormData(data);
+            return axios.post('/api/nombre-entidad', form, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
         },
 
         async updateEntidad(data: any) {
-            return axios.put(`/api/nombre-entidad/${data.id}`, data);
+            const form = this.toFormData(data);
+            form.append('_method', 'PUT');
+            return axios.post(`/api/nombre-entidad/${data.id}`, form, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
         },
 
         async deleteEntidad(id: number) {
@@ -367,6 +514,8 @@ export const useNombreEntidadStore = defineStore('nombre-entidad', {
     }
 });
 ```
+
+> **Importante:** Con `FormData`, los booleanos se convierten a string. Siempre convertirlos a `'1'` o `'0'` antes de appendear.
 
 ---
 
@@ -380,12 +529,12 @@ export const useNombreEntidadStore = defineStore('nombre-entidad', {
 ### Create.vue
 - Usa `AuthenticatedLayout`
 - Define el objeto vacío con los campos por defecto
-- En `onSubmit` usa `router.post(route('entidad.store'), data)` de Inertia
+- En `onSubmit` llama a `store.createEntidad(data)` y después `router.visit(route('entidad.index'))`
 
 ### Edit.vue
 - Recibe `id` como prop desde Inertia
 - En `onMounted` llama a `store.getEntidad(id)` y asigna `response.data.data`
-- En `onSubmit` usa `router.put(route('entidad.update', id), data)` de Inertia
+- En `onSubmit` llama a `store.updateEntidad({ id, ...data })` y después `router.visit`
 
 ### EntidadForm.vue
 - Componente compartido entre Create y Edit
@@ -393,6 +542,9 @@ export const useNombreEntidadStore = defineStore('nombre-entidad', {
 - Emite `@submit` con los datos del formulario
 - Carga datos externos (categorías, etc.) via axios en `onMounted`
 - Genera slug automáticamente desde el nombre
+- Para imágenes: input `type="file"` con `@change` que asigna a `form.logo` o `form.nuevasImagenes`
+- Muestra preview del logo existente con `logo_url`
+- Muestra galería de imágenes existentes con botón de eliminar individual
 
 ### EntidadTable.vue
 - Carga datos en `onMounted` via el store
@@ -405,9 +557,12 @@ export const useNombreEntidadStore = defineStore('nombre-entidad', {
 
 ## Notas importantes
 
-- **Booleanos:** siempre castear con `(bool)` en el Resource para que los checkboxes funcionen en Vue.
-- **Relaciones `belongsTo`:** especificar la foreign key y la primary key explícitamente para evitar problemas de resolución.
-- **Nombres de tablas:** si no siguen la convención inglesa, agregar `protected $table = 'nombre_tabla'` en el modelo.
-- **Slug:** generarlo automáticamente desde el nombre en el frontend, normalizando caracteres especiales y espacios.
-- **Submit en Create/Edit:** usar `router.post/put` de Inertia, no axios, para que la sesión se maneje correctamente.
+- **Booleanos:** castear con `(bool)` en Resource y con `'1'/'0'` en FormData del store.
+- **Relaciones `belongsTo`:** especificar foreign key y primary key explícitamente: `belongsTo(Model::class, 'foreign_key', 'id')`.
+- **Nombres de tablas:** Laravel pluraliza en inglés. Siempre verificar el nombre generado y agregar `protected $table` si es incorrecto.
+- **Storage:** usar `Storage::disk('public')` siempre. El link simbólico se crea con `php artisan storage:link`.
+- **Validación de imágenes:** usar `mimes:jpg,jpeg,png,gif,webp,svg` en lugar de `image` para aceptar SVG.
+- **Colisión de nombres de rutas:** si web y api usan el mismo resource name, renombrar las rutas de API con prefijo `api.`.
+- **Submit con imágenes:** usar el store con FormData, no `router.post` de Inertia.
 - **Datos del Edit:** la respuesta de la API viene en `response.data.data`, no en `response.data`.
+- **Imágenes existentes vs nuevas:** en el store, `imagenes` (existentes) se skipean en FormData; `nuevasImagenes` (File[]) se appendean como `imagenes[]`.
