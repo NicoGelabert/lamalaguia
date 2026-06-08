@@ -24,7 +24,20 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700">Contenido</label>
-                <textarea v-model="form.contenido" rows="3" class="mt-1 w-full border rounded px-3 py-2 text-sm" />
+                <div class="mt-1 border rounded">
+                    <!-- Barra de herramientas -->
+                    <div class="flex gap-1 p-2 border-b bg-gray-50 flex-wrap">
+                        <button type="button" @click="editor?.chain().focus().toggleBold().run()" :class="editor?.isActive('bold') ? 'bg-gray-300' : ''" class="px-2 py-1 text-sm rounded hover:bg-gray-200 font-bold">B</button>
+                        <button type="button" @click="editor?.chain().focus().toggleItalic().run()" :class="editor?.isActive('italic') ? 'bg-gray-300' : ''" class="px-2 py-1 text-sm rounded hover:bg-gray-200 italic">I</button>
+                        <button type="button" @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()" :class="editor?.isActive('heading', { level: 2 }) ? 'bg-gray-300' : ''" class="px-2 py-1 text-sm rounded hover:bg-gray-200">H2</button>
+                        <button type="button" @click="editor?.chain().focus().toggleHeading({ level: 3 }).run()" :class="editor?.isActive('heading', { level: 3 }) ? 'bg-gray-300' : ''" class="px-2 py-1 text-sm rounded hover:bg-gray-200">H3</button>
+                        <button type="button" @click="editor?.chain().focus().toggleBulletList().run()" :class="editor?.isActive('bulletList') ? 'bg-gray-300' : ''" class="px-2 py-1 text-sm rounded hover:bg-gray-200">• Lista</button>
+                        <button type="button" @click="editor?.chain().focus().toggleOrderedList().run()" :class="editor?.isActive('orderedList') ? 'bg-gray-300' : ''" class="px-2 py-1 text-sm rounded hover:bg-gray-200">1. Lista</button>
+                        <button type="button" @click="addImage" class="px-2 py-1 text-sm rounded hover:bg-gray-200">🖼 Imagen</button>
+                    </div>
+                    <!-- Editor -->
+                    <EditorContent :editor="editor" class="p-3 min-h-48 prose max-w-none" />
+                </div>
             </div>
 
             <div>
@@ -67,6 +80,9 @@
 <script setup lang="ts">
 import { ref, } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import { useEditor, EditorContent } from '@tiptap/vue-3';
+import StarterKit from '@tiptap/starter-kit';
+import Image from '@tiptap/extension-image';
 
 const props = defineProps<{
     tramite: any;
@@ -105,4 +121,23 @@ function onImagenChange(e: Event) {
 function onSubmit() {
     emit('submit', form.value);
 }
+
+const editor = useEditor({
+    content: form.value.contenido,
+    extensions: [
+        StarterKit,
+        Image,
+    ],
+    onUpdate: ({ editor }) => {
+        form.value.contenido = editor.getHTML();
+    },
+});
+
+function addImage() {
+    const url = window.prompt('URL de la imagen');
+    if (url) {
+        editor.value?.chain().focus().setImage({ src: url }).run();
+    }
+}
+
 </script>
