@@ -21,7 +21,7 @@ defineProps<{
         </template>
 
         <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl px-6 lg:px-8">
 
                 <p class="text-gray-600 mb-6">Bienvenido, {{ user.name }}!</p>
 
