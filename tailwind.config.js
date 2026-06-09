@@ -13,10 +13,19 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Nunito', ...defaultTheme.fontFamily.sans],
+                titulo: ['Lato', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                primary: '#F2B84B',
+                secondary: '#47AAD5',
+                dark: '#061C32',
+                cream: '#F7FAFC',
             },
         },
     },
+
+    darkMode: 'class',
 
     plugins: [forms],
 };

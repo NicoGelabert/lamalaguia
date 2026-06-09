@@ -8,6 +8,7 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import { createPinia } from 'pinia';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const pinia = createPinia();
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -20,7 +21,7 @@ createInertiaApp({
         createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
-            .use(createPinia())
+            .use(pinia)
             .mount(el);
     },
     progress: {

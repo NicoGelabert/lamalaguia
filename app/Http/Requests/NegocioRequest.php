@@ -25,6 +25,7 @@ class NegocioRequest extends FormRequest
             'web' => ['nullable', 'url', 'max:255'],
             'lat' => ['nullable', 'numeric'],
             'lng' => ['nullable', 'numeric'],
+            'place_id' => ['nullable', 'string', 'max:255'],
             'activo' => ['required', 'boolean'],
             'categoria_negocio_id' => ['required', 'exists:categoria_negocios,id'],
             'logo' => ['nullable', 'mimes:jpg,jpeg,png,gif,webp,svg', 'max:2048'],

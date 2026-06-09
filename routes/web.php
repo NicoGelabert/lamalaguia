@@ -9,11 +9,17 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NegocioController;
 use App\Http\Controllers\EventoController;
 use App\Http\Controllers\TramiteController;
+use App\Http\Controllers\HomeController;
 
-Route::get('/', function () {
+//FrontEnd
+Route::get('/', HomeController::class)->name('home');
+//FrontEnd
+
+Route::get('/laravel', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
+        'lamalaguiaVersion' => config('app.version'),
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);

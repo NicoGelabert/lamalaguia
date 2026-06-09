@@ -26,6 +26,7 @@ class NegocioResource extends JsonResource
             'web' => $this->web,
             'lat' => $this->lat,
             'lng' => $this->lng,
+            'place_id' => $this->place_id,
             'activo' => (bool) $this->activo,
             'categoria_negocio_id' => $this->categoria_negocio_id,
             'categoria' => $this->categoria?->nombre,

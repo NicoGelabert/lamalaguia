@@ -20,6 +20,7 @@ class Negocio extends Model
         'web',
         'lat',
         'lng',
+        'place_id',
         'activo',
         'logo',
         'logo_mime',

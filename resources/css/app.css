@@ -1,3 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Nunito:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        background-color: #F7FAFC;
+        color: #061C32;
+        font-family: 'Nunito', sans-serif;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Lato', sans-serif;
+    }
+}
+
+@layer components {
+    .btn{
+        @apply whitespace-nowrap text-center;
+    }
+    .btn-primary {
+        @apply border border-gray-300 text-dark font-semibold rounded-full py-3 px-6 text-sm hover:bg-dark hover:text-white transition-colors;
+        
+    }
+
+    .btn-secondary {
+        @apply bg-dark text-white border rounded-full py-3 px-6 text-sm font-medium hover:bg-transparent hover:text-dark hover:border-primary transition-colors;
+    }
+
+    .btn-outline {
+        @apply border border-gray-300 text-dark font-semibold rounded-full py-3 px-6 text-sm hover:border-dark transition-colors;
+    }
+
+    .btn-send {
+        @apply bg-primary text-dark font-semibold rounded-full py-3 px-6 text-sm hover:opacity-90 transition-opacity;
+    }
+}
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+    transition: transform 0.3s ease;
+}
+.slide-up-enter-from,
+.slide-up-leave-to {
+    transform: translateY(100%);
+}

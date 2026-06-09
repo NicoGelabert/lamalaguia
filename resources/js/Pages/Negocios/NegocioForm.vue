@@ -64,6 +64,26 @@
                 </div>
             </div>
 
+            <!-- Preview mapa -->
+            <div v-if="form.lat && form.lng">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+                <MapaNegocio 
+                    :lat="form.lat" 
+                    :lng="form.lng" 
+                    :nombre="form.nombre"
+                    :place-id="form.place_id"
+                />
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Google Place ID</label>
+                <input v-model="form.place_id" type="text" class="mt-1 w-full border rounded px-3 py-2 text-sm" placeholder="ChIJ..." />
+                <p class="text-xs text-gray-400 mt-1">
+                    Encontralo en 
+                    <a href="https://developers.google.com/maps/documentation/places/web-service/place-id" target="_blank" class="underline">Google Place ID Finder</a>
+                </p>
+            </div>
+
             <div class="flex items-center gap-2">
                 <input v-model="form.activo" type="checkbox" id="activo" class="rounded" />
                 <label for="activo" class="text-sm font-medium text-gray-700">Activo</label>
@@ -122,6 +142,7 @@
 import { ref, onMounted } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import axios from 'axios';
+import MapaNegocio from '@/Components/MapaNegocio.vue';
 
 const props = defineProps<{
     negocio: any;

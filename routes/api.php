@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\CategoriaNegocioController;
 use App\Http\Controllers\Api\NegocioController;
 use App\Http\Controllers\Api\EventoController;
 use App\Http\Controllers\Api\TramiteController;
+use App\Http\Controllers\Api\ChatController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -30,3 +31,5 @@ Route::get('tramites/{tramite}', [TramiteController::class, 'show'])->name('api.
 Route::post('tramites', [TramiteController::class, 'store'])->name('api.tramites.store');
 Route::put('tramites/{tramite}', [TramiteController::class, 'update'])->name('api.tramites.update');
 Route::delete('tramites/{tramite}', [TramiteController::class, 'destroy'])->name('api.tramites.destroy');
+
+Route::post('chat', ChatController::class);

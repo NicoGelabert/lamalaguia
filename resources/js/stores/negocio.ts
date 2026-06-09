@@ -13,6 +13,7 @@ interface Negocio {
     web: string | null;
     lat: number | null;
     lng: number | null;
+    place_id: string | null;
     activo: boolean;
     categoria_negocio_id: number;
     categoria: string | null;

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
+import { version as vueVersion } from 'vue'
 
 defineProps<{
     canLogin?: boolean;
     canRegister?: boolean;
+    lamalaguiaVersion: string;
     laravelVersion: string;
     phpVersion: string;
 }>();
@@ -18,7 +20,7 @@ function handleImageError() {
 
 <template>
     <Head title="Welcome" />
-    <div class="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
+    <div class="">
         <img
             id="background"
             class="absolute -left-20 top-0 max-w-[877px]"
@@ -368,7 +370,7 @@ function handleImageError() {
                 <footer
                     class="py-16 text-center text-sm text-black dark:text-white/70"
                 >
-                    Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }})
+                    LaMalaguia v{{ lamalaguiaVersion }} | Laravel v{{ laravelVersion }} (PHP v{{ phpVersion }}) | vue v{{ vueVersion }}
                 </footer>
             </div>
         </div>

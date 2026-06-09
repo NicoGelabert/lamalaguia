@@ -33,6 +33,7 @@ const negocio = {
     web: '',
     lat: null,
     lng: null,
+    place_id: '',
     activo: true,
     categoria_negocio_id: null,
 };
