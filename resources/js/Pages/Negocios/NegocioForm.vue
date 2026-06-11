@@ -23,8 +23,24 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700">Descripción</label>
-                <textarea v-model="form.descripcion" rows="3" class="mt-1 w-full border rounded px-3 py-2 text-sm" />
+                <label class="block text-sm font-medium text-gray-700">Descripción corta</label>
+                <input
+                    v-model="form.descripcion_corta"
+                    type="text"
+                    maxlength="160"
+                    class="mt-1 w-full border rounded px-3 py-2 text-sm"
+                    placeholder="Para tarjetas en la home (máx. 160 caracteres)"
+                />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Descripción completa</label>
+                <textarea
+                    v-model="form.descripcion"
+                    rows="5"
+                    class="mt-1 w-full border rounded px-3 py-2 text-sm"
+                    placeholder="Para la ficha pública del negocio"
+                />
             </div>
 
             <div class="grid grid-cols-2 gap-4">
@@ -89,6 +105,23 @@
                 <label for="activo" class="text-sm font-medium text-gray-700">Activo</label>
             </div>
 
+            <div class="flex items-center gap-2">
+                <input v-model="form.destacado" type="checkbox" id="destacado" class="rounded" />
+                <label for="destacado" class="text-sm font-medium text-gray-700">Destacado en la home</label>
+            </div>
+
+            <div v-if="form.destacado">
+                <label class="block text-sm font-medium text-gray-700">Orden en destacados</label>
+                <input
+                    v-model.number="form.orden_destacado"
+                    type="number"
+                    min="0"
+                    class="mt-1 w-full border rounded px-3 py-2 text-sm"
+                    placeholder="1 = primero"
+                />
+                <p class="text-xs text-gray-400 mt-1">Menor número = más arriba en la home.</p>
+            </div>
+
             <!-- Logo -->
             <div>
                 <label class="block text-sm font-medium text-gray-700">Logo</label>
@@ -128,7 +161,7 @@
         </div>
 
         <div class="flex justify-end gap-3 mt-6">
-            <Link :href="route('negocios.index')" class="px-4 py-2 text-sm border rounded hover:bg-gray-50">
+            <Link :href="route('admin.negocios.index')" class="px-4 py-2 text-sm border rounded hover:bg-gray-50">
                 Cancelar
             </Link>
             <button type="submit" class="px-4 py-2 text-sm bg-gray-800 text-white rounded hover:bg-gray-700">

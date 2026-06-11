@@ -32,6 +32,6 @@ onMounted(async () => {
 
 async function onSubmit(data: any) {
     await store.updateNegocio({ id: props.id, ...data });
-    router.visit(route('negocios.index'));
+    router.visit(route('admin.negocios.index'));
 }
 </script>

@@ -27,6 +27,32 @@
                 <input v-model="form.lugar" type="text" class="mt-1 w-full border rounded px-3 py-2 text-sm" />
             </div>
 
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Latitud</label>
+                    <input v-model="form.lat" type="number" step="any" class="mt-1 w-full border rounded px-3 py-2 text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Longitud</label>
+                    <input v-model="form.lng" type="number" step="any" class="mt-1 w-full border rounded px-3 py-2 text-sm" />
+                </div>
+            </div>
+
+            <div v-if="form.lat && form.lng">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+                <MapaNegocio
+                    :lat="Number(form.lat)"
+                    :lng="Number(form.lng)"
+                    :nombre="form.nombre"
+                    :place-id="form.place_id"
+                />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Google Place ID</label>
+                <input v-model="form.place_id" type="text" class="mt-1 w-full border rounded px-3 py-2 text-sm" placeholder="ChIJ..." />
+            </div>
+
             <div>
                 <label class="block text-sm font-medium text-gray-700">URL externo</label>
                 <input v-model="form.url_externo" type="url" class="mt-1 w-full border rounded px-3 py-2 text-sm" />
@@ -76,7 +102,7 @@
         </div>
 
         <div class="flex justify-end gap-3 mt-6">
-            <Link :href="route('eventos.index')" class="px-4 py-2 text-sm border rounded hover:bg-gray-50">
+            <Link :href="route('admin.eventos.index')" class="px-4 py-2 text-sm border rounded hover:bg-gray-50">
                 Cancelar
             </Link>
             <button type="submit" class="px-4 py-2 text-sm bg-gray-800 text-white rounded hover:bg-gray-700">
@@ -89,6 +115,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
+import MapaNegocio from '@/Components/MapaNegocio.vue';
 
 const props = defineProps<{
     evento: any;

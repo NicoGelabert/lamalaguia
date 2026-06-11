@@ -40,22 +40,28 @@ const showingNavigationDropdown = ref(false);
                                     Dashboard
                                 </NavLink>
                                 <NavLink
-                                    :href="route('negocios.index')"
-                                    :active="route().current('negocios.*')"
+                                    :href="route('admin.negocios.index')"
+                                    :active="route().current('admin.negocios.*')"
                                 >
                                     Negocios
                                 </NavLink>
                                 <NavLink
-                                    :href="route('eventos.index')"
-                                    :active="route().current('eventos.*')"
+                                    :href="route('admin.eventos.index')"
+                                    :active="route().current('admin.eventos.*')"
                                 >
                                     Eventos
                                 </NavLink>
                                 <NavLink
-                                    :href="route('tramites.index')"
-                                    :active="route().current('tramites.*')"
+                                    :href="route('admin.tramites.index')"
+                                    :active="route().current('admin.tramites.*')"
                                 >
                                     Trámites
+                                </NavLink>
+                                <NavLink
+                                    :href="route('admin.sitios-interes.index')"
+                                    :active="route().current('admin.sitios-interes.*')"
+                                >
+                                    Sitios
                                 </NavLink>
                             </div>
                         </div>
@@ -165,22 +171,28 @@ const showingNavigationDropdown = ref(false);
                             Dashboard
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            :href="route('negocios.index')"
-                            :active="route().current('negocios.*')"
+                            :href="route('admin.negocios.index')"
+                            :active="route().current('admin.negocios.*')"
                         >
                             Negocios
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            :href="route('eventos.index')"
-                            :active="route().current('eventos.*')"
+                            :href="route('admin.eventos.index')"
+                            :active="route().current('admin.eventos.*')"
                         >
                             Eventos
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            :href="route('tramites.index')"
-                            :active="route().current('tramites.*')"
+                            :href="route('admin.tramites.index')"
+                            :active="route().current('admin.tramites.*')"
                         >
                             Trámites
+                        </ResponsiveNavLink>
+                        <ResponsiveNavLink
+                            :href="route('admin.sitios-interes.index')"
+                            :active="route().current('admin.sitios-interes.*')"
+                        >
+                            Sitios
                         </ResponsiveNavLink>
                     </div>
 

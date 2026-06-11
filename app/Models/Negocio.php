@@ -13,6 +13,7 @@ class Negocio extends Model
         'nombre',
         'slug',
         'descripcion',
+        'descripcion_corta',
         'direccion',
         'ciudad',
         'telefono',
@@ -22,9 +23,17 @@ class Negocio extends Model
         'lng',
         'place_id',
         'activo',
+        'destacado',
+        'orden_destacado',
         'logo',
         'logo_mime',
         'logo_size',
+    ];
+
+    protected $casts = [
+        'activo' => 'boolean',
+        'destacado' => 'boolean',
+        'orden_destacado' => 'integer',
     ];
 
     public function categoria()

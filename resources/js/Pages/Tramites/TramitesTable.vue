@@ -40,7 +40,7 @@
                     </td>
                     <td class="px-4 py-2">{{ tramite.updated_at }}</td>
                     <td class="px-4 py-2 flex gap-2">
-                        <Link :href="route('tramites.edit', tramite.id)" class="text-blue-600 hover:underline">
+                        <Link :href="route('admin.tramites.edit', tramite.id)" class="text-blue-600 hover:underline">
                             Editar
                         </Link>
                         <button @click="onDelete(tramite.id)" class="text-red-500 hover:underline">

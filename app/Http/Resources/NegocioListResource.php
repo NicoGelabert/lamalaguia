@@ -19,7 +19,10 @@ class NegocioListResource extends JsonResource
             'nombre' => $this->nombre,
             'slug' => $this->slug,
             'ciudad' => $this->ciudad,
+            'descripcion_corta' => $this->descripcion_corta,
             'activo' => $this->activo,
+            'destacado' => (bool) $this->destacado,
+            'orden_destacado' => $this->orden_destacado,
             'categoria' => $this->categoria?->nombre,
             'updated_at' => (new \DateTime($this->updated_at))->format('Y-m-d H:i:s'),
         ];

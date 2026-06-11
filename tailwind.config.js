@@ -14,7 +14,7 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Nunito', ...defaultTheme.fontFamily.sans],
-                titulo: ['Lato', ...defaultTheme.fontFamily.sans],
+                titulo: ['Cabin', ...defaultTheme.fontFamily.sans],
             },
             colors: {
                 primary: '#F2B84B',

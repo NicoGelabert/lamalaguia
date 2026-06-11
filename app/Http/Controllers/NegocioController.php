@@ -42,6 +42,6 @@ class NegocioController extends Controller
 
         Negocio::create($data);
 
-        return redirect()->route('negocios.index');
+        return redirect()->route('admin.negocios.index');
     }
 }

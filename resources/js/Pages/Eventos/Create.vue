@@ -28,12 +28,15 @@ const evento = {
     descripcion: '',
     fecha: '',
     lugar: '',
+    lat: null,
+    lng: null,
+    place_id: '',
     url_externo: '',
     activo: true,
 };
 
 async function onSubmit(data: any) {
     await store.createEvento(data);
-    router.visit(route('eventos.index'));
+    router.visit(route('admin.eventos.index'));
 }
 </script>

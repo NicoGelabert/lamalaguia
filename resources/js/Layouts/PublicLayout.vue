@@ -2,12 +2,12 @@
     <div class="min-h-screen flex flex-col">
 
         <!-- Header -->
-        <header class="fixed top-0 left-0 right-0 z-50 border-b border-gray-100 px-4 h-16 flex items-center justify-between">
+        <header class="site-header">
             <Link href="/" class="flex items-center">
                 <ApplicationLogo class="h-8 w-auto" />
             </Link>
 
-            <button @click="menuAbierto = !menuAbierto" class="p-2 rounded-md text-gray-600 hover:bg-gray-100">
+            <button @click="menuAbierto = !menuAbierto" class="p-2 rounded-md text-gray-600 hover:bg-dark/5 transition-colors">
                 <svg v-if="!menuAbierto" class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
@@ -17,17 +17,50 @@
             </button>
         </header>
 
-        <!-- Menú hamburguesa -->
-        <div v-if="menuAbierto" class="fixed top-16 left-0 right-0 z-40 bg-white border-b border-gray-100 shadow-md px-4 py-4 flex flex-col gap-3">
-            <Link href="/tramites" class="text-gray-700 hover:text-gray-900 text-sm font-medium" @click="menuAbierto = false">Trámites</Link>
-            <Link href="/negocios" class="text-gray-700 hover:text-gray-900 text-sm font-medium" @click="menuAbierto = false">Negocios</Link>
-            <Link href="/eventos" class="text-gray-700 hover:text-gray-900 text-sm font-medium" @click="menuAbierto = false">Eventos</Link>
-        </div>
+        <!-- Menú móvil pantalla completa -->
+        <Transition name="slide-menu">
+            <div v-if="menuAbierto" class="mobile-menu">
+                <button
+                    type="button"
+                    class="mobile-menu-close"
+                    aria-label="Cerrar menú"
+                    @click="menuAbierto = false"
+                >
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+
+                <div class="mobile-menu-logo">
+                    <Link href="/" @click="menuAbierto = false">
+                        <ApplicationLogo class="h-10 w-auto" />
+                    </Link>
+                </div>
+
+                <nav class="mobile-menu-nav">
+                    <Link href="/tramites" class="mobile-menu-link" @click="menuAbierto = false">Trámites</Link>
+                    <Link href="/negocios" class="mobile-menu-link" @click="menuAbierto = false">Negocios</Link>
+                    <Link href="/eventos" class="mobile-menu-link" @click="menuAbierto = false">Eventos</Link>
+                </nav>
+            </div>
+        </Transition>
 
         <!-- Contenido -->
         <main class="flex-1">
             <slot />
         </main>
+
+        <footer class="site-footer">
+            <div class="max-w-2xl mx-auto text-center">
+                <ApplicationLogoWhite class="h-8 w-auto mx-auto" />
+                <p class="text-white/70 text-sm mt-2">
+                    Hecho por argentinos, para argentinos en Andalucía.
+                </p>
+                <p class="text-white/50 text-xs mt-6">
+                    © {{ new Date().getFullYear() }} La Malaguía
+                </p>
+            </div>
+        </footer>
 
         <!-- Chat pantalla completa -->
         <transition name="slide-up">
@@ -73,8 +106,21 @@
         </transition>
 
         <!-- Chat IA fixed bottom -->
-        <div class="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-100 px-4 py-3">
+        <div class="fixed bottom-0 left-0 right-0 z-50 border-t bg-cream px-4 py-3">
             <div class="max-w-2xl mx-auto flex gap-2 items-center">
+                <button
+                    type="button"
+                    class="location-btn shrink-0"
+                    :class="{ 'location-btn-active': ubicacion.activa }"
+                    :title="ubicacion.activa ? 'Ubicación activa' : 'Usar mi ubicación'"
+                    :disabled="ubicacion.cargando"
+                    @click="toggleUbicacion"
+                >
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </button>
                 <input
                     v-model="pregunta"
                     type="text"
@@ -92,14 +138,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import ApplicationLogoWhite from '@/Components/ApplicationLogoWhite.vue';
 import { Link } from '@inertiajs/vue3';
 import { useChatStore } from '@/stores/chat';
+import { useLocationStore } from '@/stores/location';
 
 const menuAbierto = ref(false);
 const chat = useChatStore();
+const ubicacion = useLocationStore();
 const pregunta = ref('');
+
+onMounted(() => {
+    ubicacion.init();
+});
+
+watch(menuAbierto, (abierto) => {
+    document.body.style.overflow = abierto ? 'hidden' : '';
+});
+
+async function toggleUbicacion() {
+    if (ubicacion.activa) {
+        ubicacion.desactivar();
+        return;
+    }
+
+    await ubicacion.solicitarUbicacion();
+}
 
 function enviarPregunta() {
     if (!pregunta.value.trim()) return;

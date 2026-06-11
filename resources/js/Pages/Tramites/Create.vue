@@ -33,6 +33,6 @@ const tramite = {
 
 async function onSubmit(data: any) {
     await store.createTramite(data);
-    router.visit(route('tramites.index'));
+    router.visit(route('admin.tramites.index'));
 }
 </script>

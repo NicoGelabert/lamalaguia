@@ -8,6 +8,9 @@ interface Evento {
     descripcion: string | null;
     fecha: string;
     lugar: string | null;
+    lat: number | null;
+    lng: number | null;
+    place_id: string | null;
     url_externo: string | null;
     activo: boolean;
     imagen_url: string | null;

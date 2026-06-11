@@ -3,7 +3,7 @@
         <template #header>
             <div class="flex justify-between items-center">
                 <h2 class="text-xl font-semibold text-gray-800">Eventos</h2>
-                <Link :href="route('eventos.create')" class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 text-sm">
+                <Link :href="route('admin.eventos.create')" class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700 text-sm">
                     + Nuevo evento
                 </Link>
             </div>

@@ -26,6 +26,7 @@ const negocio = {
     nombre: '',
     slug: '',
     descripcion: '',
+    descripcion_corta: '',
     direccion: '',
     ciudad: 'Málaga',
     telefono: '',
@@ -35,11 +36,13 @@ const negocio = {
     lng: null,
     place_id: '',
     activo: true,
+    destacado: false,
+    orden_destacado: null,
     categoria_negocio_id: null,
 };
 
 async function onSubmit(data: any) {
     await store.createNegocio(data);
-    router.visit(route('negocios.index'));
+    router.visit(route('admin.negocios.index'));
 }
 </script>

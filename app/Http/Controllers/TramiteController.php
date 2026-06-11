@@ -36,6 +36,6 @@ class TramiteController extends Controller
 
         Tramite::create($data);
 
-        return redirect()->route('tramites.index');
+        return redirect()->route('admin.tramites.index');
     }
 }

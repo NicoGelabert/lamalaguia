@@ -36,6 +36,6 @@ class EventoController extends Controller
 
         Evento::create($data);
 
-        return redirect()->route('eventos.index');
+        return redirect()->route('admin.eventos.index');
     }
 }

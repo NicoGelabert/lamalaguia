@@ -40,7 +40,7 @@
                     </td>
                     <td class="px-4 py-2">{{ evento.updated_at }}</td>
                     <td class="px-4 py-2 flex gap-2">
-                        <Link :href="route('eventos.edit', evento.id)" class="text-blue-600 hover:underline">
+                        <Link :href="route('admin.eventos.edit', evento.id)" class="text-blue-600 hover:underline">
                             Editar
                         </Link>
                         <button @click="onDelete(evento.id)" class="text-red-500 hover:underline">

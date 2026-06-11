@@ -14,6 +14,9 @@ class Evento extends Model
         'descripcion',
         'fecha',
         'lugar',
+        'lat',
+        'lng',
+        'place_id',
         'url_externo',
         'activo',
         'imagen',
@@ -23,6 +26,8 @@ class Evento extends Model
 
     protected $casts = [
         'fecha' => 'datetime',
+        'lat' => 'float',
+        'lng' => 'float',
     ];
 
     public function imagenes()

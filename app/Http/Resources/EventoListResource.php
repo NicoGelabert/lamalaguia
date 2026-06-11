@@ -20,6 +20,8 @@ class EventoListResource extends JsonResource
             'slug'       => $this->slug,
             'fecha'      => (new \DateTime($this->fecha))->format('Y-m-d H:i'),
             'lugar'      => $this->lugar,
+            'lat'        => $this->lat,
+            'lng'        => $this->lng,
             'activo'     => (bool) $this->activo,
             'updated_at' => (new \DateTime($this->updated_at))->format('Y-m-d H:i:s'),
         ];

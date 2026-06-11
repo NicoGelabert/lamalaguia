@@ -67,7 +67,7 @@
         </div>
 
         <div class="flex justify-end gap-3 mt-6">
-            <Link :href="route('tramites.index')" class="px-4 py-2 text-sm border rounded hover:bg-gray-50">
+            <Link :href="route('admin.tramites.index')" class="px-4 py-2 text-sm border rounded hover:bg-gray-50">
                 Cancelar
             </Link>
             <button type="submit" class="px-4 py-2 text-sm bg-gray-800 text-white rounded hover:bg-gray-700">

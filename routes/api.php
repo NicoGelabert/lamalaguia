@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\NegocioController;
 use App\Http\Controllers\Api\EventoController;
 use App\Http\Controllers\Api\TramiteController;
 use App\Http\Controllers\Api\ChatController;
+use App\Http\Controllers\Api\SitioInteresController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -33,3 +34,7 @@ Route::put('tramites/{tramite}', [TramiteController::class, 'update'])->name('ap
 Route::delete('tramites/{tramite}', [TramiteController::class, 'destroy'])->name('api.tramites.destroy');
 
 Route::post('chat', ChatController::class);
+
+Route::apiResource('sitios-interes', SitioInteresController::class)
+    ->parameters(['sitios-interes' => 'sitioInteres'])
+    ->names('api.sitios-interes');

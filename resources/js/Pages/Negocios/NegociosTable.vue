@@ -17,13 +17,14 @@
                     <th class="px-4 py-2">Categoría</th>
                     <th class="px-4 py-2 cursor-pointer" @click="sortBy('ciudad')">Ciudad</th>
                     <th class="px-4 py-2">Activo</th>
+                    <th class="px-4 py-2">Destacado</th>
                     <th class="px-4 py-2 cursor-pointer" @click="sortBy('updated_at')">Actualizado</th>
                     <th class="px-4 py-2">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-if="store.loading">
-                    <td colspan="6" class="text-center py-4">Cargando...</td>
+                    <td colspan="7" class="text-center py-4">Cargando...</td>
                 </tr>
                 <tr
                     v-for="negocio in store.data"
@@ -38,9 +39,15 @@
                             {{ negocio.activo ? 'Sí' : 'No' }}
                         </span>
                     </td>
+                    <td class="px-4 py-2">
+                        <span v-if="negocio.destacado" class="text-primary font-medium">
+                            Sí{{ negocio.orden_destacado !== null ? ` (#${negocio.orden_destacado})` : '' }}
+                        </span>
+                        <span v-else class="text-gray-400">No</span>
+                    </td>
                     <td class="px-4 py-2">{{ negocio.updated_at }}</td>
                     <td class="px-4 py-2 flex gap-2">
-                        <Link :href="route('negocios.edit', negocio.id)" class="text-blue-600 hover:underline">
+                        <Link :href="route('admin.negocios.edit', negocio.id)" class="text-blue-600 hover:underline">
                             Editar
                         </Link>
                         <button @click="onDelete(negocio.id)" class="text-red-500 hover:underline">

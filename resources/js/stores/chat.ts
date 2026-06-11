@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
+import { useLocationStore } from '@/stores/location';
 
 interface Mensaje {
     rol: 'usuario' | 'agente';
@@ -26,9 +27,14 @@ export const useChatStore = defineStore('chat', {
             this.abierto = true;
 
             try {
+                const historial = this.mensajes.slice(0, -1).slice(-4);
+
+                const ubicacion = useLocationStore().getUbicacionParaApi();
+
                 const response = await axios.post('/api/chat', {
                     mensaje: texto,
-                    historial: this.mensajes.slice(-6), // últimos 6 mensajes de contexto
+                    historial,
+                    ubicacion,
                 });
                 this.mensajes.push({ rol: 'agente', contenido: response.data.respuesta });
             } catch {

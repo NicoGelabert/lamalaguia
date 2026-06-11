@@ -6,6 +6,7 @@ interface Negocio {
     nombre: string;
     slug: string;
     descripcion: string | null;
+    descripcion_corta: string | null;
     direccion: string | null;
     ciudad: string;
     telefono: string | null;
@@ -15,6 +16,8 @@ interface Negocio {
     lng: number | null;
     place_id: string | null;
     activo: boolean;
+    destacado: boolean;
+    orden_destacado: number | null;
     categoria_negocio_id: number;
     categoria: string | null;
     logo_url: string | null;

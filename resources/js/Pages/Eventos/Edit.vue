@@ -32,6 +32,6 @@ onMounted(async () => {
 
 async function onSubmit(data: any) {
     await store.updateEvento({ id: props.id, ...data });
-    router.visit(route('eventos.index'));
+    router.visit(route('admin.eventos.index'));
 }
 </script>

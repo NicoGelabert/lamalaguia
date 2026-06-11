@@ -32,6 +32,6 @@ onMounted(async () => {
 
 async function onSubmit(data: any) {
     await store.updateTramite({ id: props.id, ...data });
-    router.visit(route('tramites.index'));
+    router.visit(route('admin.tramites.index'));
 }
 </script>
