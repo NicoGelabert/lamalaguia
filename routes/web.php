@@ -13,9 +13,22 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SitioInteresController;
 use App\Http\Controllers\Public\EventoController as PublicEventoController;
 use App\Http\Controllers\Public\NegocioController as PublicNegocioController;
+use App\Http\Controllers\Public\ContactoController;
+use App\Http\Controllers\Public\LegalController;
 use App\Http\Controllers\Public\TramiteController as PublicTramiteController;
 
 Route::get('/', HomeController::class)->name('home');
+Route::get('/contacto', [ContactoController::class, 'index'])->name('contacto.index');
+Route::post('/contacto', [ContactoController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('contacto.store');
+
+Route::prefix('legal')->name('legal.')->group(function () {
+    Route::get('/aviso-legal', [LegalController::class, 'avisoLegal'])->name('aviso');
+    Route::get('/privacidad', [LegalController::class, 'privacidad'])->name('privacidad');
+    Route::get('/cookies', [LegalController::class, 'cookies'])->name('cookies');
+    Route::get('/terminos', [LegalController::class, 'terminos'])->name('terminos');
+});
 Route::get('/tramites', [PublicTramiteController::class, 'index'])->name('tramites.index');
 Route::get('/tramites/{slug}', [PublicTramiteController::class, 'show'])->name('tramites.show');
 Route::get('/negocios', [PublicNegocioController::class, 'index'])->name('negocios.index');

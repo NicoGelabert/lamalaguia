@@ -89,11 +89,11 @@ const props = defineProps<{
 }>();
 
 const categorias = [
-    { value: 'documentación', label: 'Documentación' },
-    { value: 'salud', label: 'Salud' },
-    { value: 'trabajo', label: 'Trabajo' },
-    { value: 'vivienda', label: 'Vivienda' },
-    { value: 'educación', label: 'Educación' },
+    { value: 'Documentación', label: 'Documentación' },
+    { value: 'Salud', label: 'Salud' },
+    { value: 'Trabajo', label: 'Trabajo' },
+    { value: 'Vivienda', label: 'Vivienda' },
+    { value: 'Educación', label: 'Educación' },
 ];
 
 const emit = defineEmits(['submit']);

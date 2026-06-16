@@ -6,6 +6,7 @@ use App\Models\Evento;
 use App\Models\Negocio;
 use App\Models\SitioInteres;
 use App\Models\Tramite;
+use App\Support\RedSocialTipo;
 
 class ChatContextBuilder
 {
@@ -265,6 +266,9 @@ class ChatContextBuilder
         $lines = [$header];
         foreach ($eventos as $evento) {
             $line = "- {$evento->nombre} | {$evento->fecha->format('d/m/Y H:i')} | {$evento->lugar}";
+            if ($evento->slug) {
+                $line .= " | Guía: /eventos/{$evento->slug}";
+            }
             if ($evento->descripcion) {
                 $line .= ' | ' . $this->truncate($evento->descripcion);
             }
@@ -485,10 +489,15 @@ class ChatContextBuilder
             $negocio->whatsapp ? "WhatsApp: {$negocio->whatsapp}" : null,
             $negocio->direccion ? "Dir: {$negocio->direccion}" : null,
             $negocio->web ? "Web: {$negocio->web}" : null,
+            ...$this->formatRedesSociales($negocio->redes_sociales ?? []),
         ]);
 
         if ($contacto !== []) {
             $line .= ' | ' . implode(' | ', $contacto);
+        }
+
+        if ($negocio->slug) {
+            $line .= " | Guía: /negocios/{$negocio->slug}";
         }
 
         return $line;
@@ -519,6 +528,9 @@ class ChatContextBuilder
         $lines = ['TRÁMITES:'];
         foreach ($tramites as $tramite) {
             $line = "- {$tramite->titulo} ({$tramite->categoria})";
+            if ($tramite->slug) {
+                $line .= " | Guía: /tramites/{$tramite->slug}";
+            }
             if ($tramite->contenido) {
                 $line .= ' | ' . $this->truncate($tramite->contenido);
             }
@@ -711,6 +723,25 @@ class ChatContextBuilder
         $sorted = $this->applyGeoSorting($items);
 
         return $sorted->filter(fn ($item) => $item->distancia_km !== null && $item->distancia_km <= $radiusKm)->values();
+    }
+
+    private function formatRedesSociales(array $redes): array
+    {
+        $lines = [];
+
+        foreach ($redes as $red) {
+            $tipo = $red['tipo'] ?? null;
+            $url = $red['url'] ?? null;
+
+            if (! is_string($tipo) || ! is_string($url) || $url === '') {
+                continue;
+            }
+
+            $etiqueta = RedSocialTipo::ETIQUETAS[$tipo] ?? $tipo;
+            $lines[] = "{$etiqueta}: {$url}";
+        }
+
+        return $lines;
     }
 
     private function truncate(string $text): string

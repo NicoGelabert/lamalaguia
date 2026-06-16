@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
+import { trackEvent } from '@/lib/analytics';
 import { useLocationStore } from '@/stores/location';
 
 interface Mensaje {
@@ -17,6 +18,7 @@ export const useChatStore = defineStore('chat', {
     actions: {
         abrirChat() {
             this.abierto = true;
+            trackEvent('chat_abierto');
         },
 
         async enviarMensaje(texto: string) {
@@ -31,6 +33,11 @@ export const useChatStore = defineStore('chat', {
 
                 const ubicacion = useLocationStore().getUbicacionParaApi();
 
+                trackEvent('chat_mensaje_enviado', {
+                    con_ubicacion: Boolean(ubicacion),
+                    longitud: texto.trim().length,
+                });
+
                 const response = await axios.post('/api/chat', {
                     mensaje: texto,
                     historial,
@@ -38,6 +45,7 @@ export const useChatStore = defineStore('chat', {
                 });
                 this.mensajes.push({ rol: 'agente', contenido: response.data.respuesta });
             } catch {
+                trackEvent('chat_error');
                 this.mensajes.push({ rol: 'agente', contenido: 'Hubo un error, intentá de nuevo.' });
             } finally {
                 this.cargando = false;
@@ -49,6 +57,7 @@ export const useChatStore = defineStore('chat', {
             this.mensajes.push({ rol: 'usuario', contenido: pregunta });
             this.mensajes.push({ rol: 'agente', contenido: respuesta });
             this.abierto = true;
+            trackEvent('chat_conversacion_iniciada');
         },
     }
 });

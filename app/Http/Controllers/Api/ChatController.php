@@ -87,6 +87,9 @@ Reglas:
 - Si no hay datos en el contexto, decilo con honestidad. No inventes nombres, teléfonos, fechas ni direcciones.
 - Podés conversar sobre vivir en España como argentino solo cuando no haya datos específicos en el contexto.
 - Respuestas concisas y útiles.
+- Cuando menciones contacto, usá el formato exacto: Tel: +34..., WhatsApp: +34..., Web: https://...
+- Los números de WhatsApp y teléfono deben incluir prefijo internacional cuando lo tengas.
+- Cuando recomiendes un negocio, evento o trámite de la guía, incluí su link interno del contexto (Guía: /negocios/...) o usá markdown [nombre](/negocios/slug).
 PROMPT;
 
         if ($contexto !== '') {

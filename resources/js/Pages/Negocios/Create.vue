@@ -32,6 +32,7 @@ const negocio = {
     telefono: '',
     whatsapp: '',
     web: '',
+    redes_sociales: [],
     lat: null,
     lng: null,
     place_id: '',
@@ -42,7 +43,15 @@ const negocio = {
 };
 
 async function onSubmit(data: any) {
-    await store.createNegocio(data);
-    router.visit(route('admin.negocios.index'));
+    try {
+        await store.createNegocio(data);
+        router.visit(route('admin.negocios.index'));
+    } catch (error: any) {
+        const message = error?.response?.data?.message
+            ?? Object.values(error?.response?.data?.errors ?? {})?.flat()?.[0]
+            ?? 'No se pudo guardar el negocio.';
+
+        window.alert(message);
+    }
 }
 </script>

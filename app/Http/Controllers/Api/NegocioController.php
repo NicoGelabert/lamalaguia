@@ -33,6 +33,7 @@ class NegocioController extends Controller
     public function store(NegocioRequest $request)
     {
         $data = $request->validated();
+        $data['redes_sociales'] = NegocioRequest::normalizeRedesSociales($request->input('redes_sociales'));
 
         if ($request->hasFile('logo')) {
             $data = array_merge($data, $this->saveLogo($request->file('logo')));
@@ -55,6 +56,9 @@ class NegocioController extends Controller
     public function update(NegocioRequest $request, Negocio $negocio)
     {
         $data = $request->validated();
+        $data['redes_sociales'] = NegocioRequest::normalizeRedesSociales(
+            $request->input('redes_sociales', $data['redes_sociales'] ?? null)
+        );
 
         if ($request->hasFile('logo')) {
             // Borrar logo viejo

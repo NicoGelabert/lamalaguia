@@ -56,6 +56,7 @@
                             target="_blank"
                             rel="noopener"
                             class="btn-outline text-center"
+                            @click="trackLinkExterno"
                         >
                             Más información
                         </a>
@@ -70,6 +71,7 @@
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import PublicBackLink from '@/Components/PublicBackLink.vue';
 import MapaNegocio from '@/Components/MapaNegocio.vue';
+import { trackEvent } from '@/lib/analytics';
 import { useChatStore } from '@/stores/chat';
 
 interface Imagen {
@@ -98,7 +100,12 @@ const props = defineProps<{
 
 const chat = useChatStore();
 
+function trackLinkExterno() {
+    trackEvent('evento_link_externo', { slug: props.evento.slug });
+}
+
 function consultar() {
+    trackEvent('evento_consulta_chat', { slug: props.evento.slug });
     chat.enviarMensaje(`Contame más sobre el evento "${props.evento.nombre}"`);
 }
 </script>

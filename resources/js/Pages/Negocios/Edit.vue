@@ -31,7 +31,15 @@ onMounted(async () => {
 });
 
 async function onSubmit(data: any) {
-    await store.updateNegocio({ id: props.id, ...data });
-    router.visit(route('admin.negocios.index'));
+    try {
+        await store.updateNegocio({ id: props.id, ...data });
+        router.visit(route('admin.negocios.index'));
+    } catch (error: any) {
+        const message = error?.response?.data?.message
+            ?? Object.values(error?.response?.data?.errors ?? {})?.flat()?.[0]
+            ?? 'No se pudo guardar el negocio.';
+
+        window.alert(message);
+    }
 }
 </script>

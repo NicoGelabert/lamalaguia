@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { trackEvent } from '@/lib/analytics';
 
 const STORAGE_KEY = 'lamalaguia_ubicacion';
 
@@ -52,6 +53,7 @@ export const useLocationStore = defineStore('location', {
                             lat: this.lat,
                             lng: this.lng,
                         }));
+                        trackEvent('ubicacion_activada');
                         resolve(true);
                     },
                     () => {
@@ -59,6 +61,7 @@ export const useLocationStore = defineStore('location', {
                         this.denegada = true;
                         this.cargando = false;
                         sessionStorage.removeItem(STORAGE_KEY);
+                        trackEvent('ubicacion_denegada');
                         resolve(false);
                     },
                     { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 }
@@ -72,6 +75,7 @@ export const useLocationStore = defineStore('location', {
             this.activa = false;
             this.denegada = false;
             sessionStorage.removeItem(STORAGE_KEY);
+            trackEvent('ubicacion_desactivada');
         },
 
         getUbicacionParaApi(): { lat: number; lng: number } | null {

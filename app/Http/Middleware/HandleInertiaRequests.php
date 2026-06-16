@@ -34,6 +34,14 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'analytics' => [
+                'google_id' => config('analytics.google_id'),
+                'clarity_id' => config('analytics.clarity_id'),
+                'enabled' => (bool) (config('analytics.google_id') || config('analytics.clarity_id')),
+            ],
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+            ],
         ];
     }
 }

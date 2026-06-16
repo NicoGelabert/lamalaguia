@@ -60,6 +60,52 @@
             </div>
 
             <div>
+                <div class="flex items-center justify-between gap-3">
+                    <label class="block text-sm font-medium text-gray-700">Redes sociales</label>
+                    <button
+                        type="button"
+                        class="text-sm text-gray-600 hover:text-gray-900 disabled:opacity-40"
+                        :disabled="!puedeAgregarRedSocial"
+                        @click="agregarRedSocial"
+                    >
+                        + Agregar link
+                    </button>
+                </div>
+
+                <p v-if="!form.redes_sociales.length" class="text-xs text-gray-400 mt-2">
+                    Opcional. Podés agregar solo las que tenga el negocio.
+                </p>
+
+                <div v-for="(red, index) in form.redes_sociales" :key="index" class="mt-3 flex flex-col sm:flex-row gap-2">
+                    <select
+                        v-model="red.tipo"
+                        class="sm:w-44 border rounded px-3 py-2 text-sm"
+                    >
+                        <option
+                            v-for="opcion in opcionesParaFila(red.tipo)"
+                            :key="opcion.value"
+                            :value="opcion.value"
+                        >
+                            {{ opcion.label }}
+                        </option>
+                    </select>
+                    <input
+                        v-model="red.url"
+                        type="url"
+                        class="flex-1 border rounded px-3 py-2 text-sm"
+                        placeholder="https://..."
+                    />
+                    <button
+                        type="button"
+                        class="px-3 py-2 text-sm border rounded hover:bg-gray-50"
+                        @click="quitarRedSocial(index)"
+                    >
+                        Quitar
+                    </button>
+                </div>
+            </div>
+
+            <div>
                 <label class="block text-sm font-medium text-gray-700">Dirección</label>
                 <input v-model="form.direccion" type="text" class="mt-1 w-full border rounded px-3 py-2 text-sm" />
             </div>
@@ -172,10 +218,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import axios from 'axios';
 import MapaNegocio from '@/Components/MapaNegocio.vue';
+import {
+    REDES_SOCIALES_OPCIONES,
+    primerTipoDisponible,
+    type RedSocialLink,
+    type RedSocialTipo,
+} from '@/lib/redesSociales';
 
 const props = defineProps<{
     negocio: any;
@@ -183,8 +235,34 @@ const props = defineProps<{
 
 const emit = defineEmits(['submit']);
 
-const form = ref({ ...props.negocio });
+const form = ref({
+    ...props.negocio,
+    redes_sociales: (props.negocio.redes_sociales ?? []) as RedSocialLink[],
+});
 const categorias = ref<{ id: number; nombre: string }[]>([]);
+
+const tiposUsados = computed(() => form.value.redes_sociales.map((red) => red.tipo));
+
+const puedeAgregarRedSocial = computed(() => primerTipoDisponible(tiposUsados.value) !== null);
+
+function opcionesParaFila(tipoActual: RedSocialTipo) {
+    return REDES_SOCIALES_OPCIONES.filter(
+        (opcion) => opcion.value === tipoActual || !tiposUsados.value.includes(opcion.value),
+    );
+}
+
+function agregarRedSocial() {
+    const tipo = primerTipoDisponible(tiposUsados.value);
+    if (!tipo) {
+        return;
+    }
+
+    form.value.redes_sociales.push({ tipo, url: '' });
+}
+
+function quitarRedSocial(index: number) {
+    form.value.redes_sociales.splice(index, 1);
+}
 
 onMounted(async () => {
     const response = await axios.get('/api/categorias-negocio');
@@ -220,7 +298,24 @@ function removeImagen(id: number) {
     form.value.imagenes = form.value.imagenes.filter((img: any) => img.id !== id);
 }
 
+function normalizeUrl(url: string): string {
+    const trimmed = url.trim();
+    if (!trimmed) {
+        return '';
+    }
+
+    return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
 function onSubmit() {
-    emit('submit', form.value);
+    emit('submit', {
+        ...form.value,
+        redes_sociales: form.value.redes_sociales
+            .map((red) => ({
+                ...red,
+                url: normalizeUrl(red.url),
+            }))
+            .filter((red) => red.url !== ''),
+    });
 }
 </script>

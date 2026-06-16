@@ -25,6 +25,7 @@ class NegocioResource extends JsonResource
             'telefono' => $this->telefono,
             'whatsapp' => $this->whatsapp,
             'web' => $this->web,
+            'redes_sociales' => $this->redes_sociales ?? [],
             'lat' => $this->lat,
             'lng' => $this->lng,
             'place_id' => $this->place_id,

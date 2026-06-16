@@ -7,6 +7,31 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
+        @if(config('analytics.google_id') || config('analytics.clarity_id'))
+        <script>
+            window.__ANALYTICS__ = {
+                googleId: @json(config('analytics.google_id')),
+                clarityId: @json(config('analytics.clarity_id')),
+            };
+        </script>
+        @endif
+
+        @if(config('analytics.google_id'))
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('analytics.google_id') }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('consent', 'default', {
+                analytics_storage: 'denied',
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied',
+            });
+            gtag('js', new Date());
+            gtag('config', '{{ config('analytics.google_id') }}', { send_page_view: false });
+        </script>
+        @endif
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

@@ -12,6 +12,7 @@ interface Negocio {
     telefono: string | null;
     whatsapp: string | null;
     web: string | null;
+    redes_sociales: { tipo: string; url: string }[];
     lat: number | null;
     lng: number | null;
     place_id: string | null;
@@ -70,23 +71,74 @@ export const useNegocioStore = defineStore('negocios', {
         },
         toFormData(data: any): FormData {
             const form = new FormData();
-            for (const key in data) {
-                if (data[key] === null || data[key] === undefined) continue;
-                if (key === 'nuevasImagenes' && Array.isArray(data[key])) {
-                    data[key].forEach((file: File) => form.append('imagenes[]', file));
-                } else if (key === 'imagenes') {
+            const allowedFields = [
+                'nombre',
+                'slug',
+                'descripcion',
+                'descripcion_corta',
+                'direccion',
+                'ciudad',
+                'telefono',
+                'whatsapp',
+                'web',
+                'lat',
+                'lng',
+                'place_id',
+                'activo',
+                'destacado',
+                'orden_destacado',
+                'categoria_negocio_id',
+                'logo',
+            ];
+
+            for (const key of allowedFields) {
+                if (!(key in data)) {
                     continue;
-                } else if (key === 'logo' && data[key] instanceof File) {
-                    form.append('logo', data[key]);
+                }
+
+                const value = data[key];
+
+                if (value === null || value === undefined) {
+                    continue;
+                }
+
+                if (key === 'logo' && value instanceof File) {
+                    form.append('logo', value);
                 } else if (key === 'logo') {
                     continue;
-                } else if (typeof data[key] === 'boolean') {
-                    form.append(key, data[key] ? '1' : '0');
+                } else if (typeof value === 'boolean') {
+                    form.append(key, value ? '1' : '0');
+                } else if (value === '') {
+                    continue;
                 } else {
-                    form.append(key, data[key]);
+                    form.append(key, value);
                 }
             }
+
+            this.appendRedesSociales(form, data.redes_sociales);
+
+            if (Array.isArray(data.nuevasImagenes)) {
+                data.nuevasImagenes.forEach((file: File) => form.append('imagenes[]', file));
+            }
+
             return form;
+        },
+
+        appendRedesSociales(form: FormData, redes: unknown): void {
+            if (!Array.isArray(redes) || redes.length === 0) {
+                form.append('redes_sociales', '');
+
+                return;
+            }
+
+            redes.forEach((red, index) => {
+                if (!red?.tipo || !red?.url) {
+                    return;
+                }
+
+                form.append(`redes_sociales[${index}][tipo]`, red.tipo);
+                form.append(`redes_sociales[${index}][url]`, red.url);
+            });
         },
 
         async createNegocio(negocio: any) {
@@ -98,7 +150,6 @@ export const useNegocioStore = defineStore('negocios', {
 
         async updateNegocio(negocio: any) {
             const form = this.toFormData(negocio);
-            form.append('_method', 'PUT');
             return axios.post(`/api/negocios/${negocio.id}`, form, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });

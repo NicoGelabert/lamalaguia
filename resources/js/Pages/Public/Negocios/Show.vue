@@ -43,11 +43,11 @@
                             <span class="text-gray-400">Dirección:</span> {{ negocio.direccion }}
                         </p>
                         <p v-if="negocio.telefono">
-                            <span class="text-gray-400">Teléfono:</span>
+                            <span class="text-gray-400">Teléfono: </span>
                             <a :href="`tel:${negocio.telefono}`">{{ negocio.telefono }}</a>
                         </p>
                         <p v-if="negocio.whatsapp">
-                            <span class="text-gray-400">WhatsApp:</span>
+                            <span class="text-gray-400">WhatsApp: </span>
                             <a :href="whatsappUrl(negocio.whatsapp)" target="_blank" rel="noopener">
                                 {{ negocio.whatsapp }}
                             </a>
@@ -56,6 +56,22 @@
                             <span class="text-gray-400">Web:</span>
                             <a :href="negocio.web" target="_blank" rel="noopener">{{ negocio.web }}</a>
                         </p>
+                    </div>
+
+                    <div v-if="negocio.redes_sociales.length" class="public-detail-meta mt-4">
+                        <p class="text-gray-400 mb-2">Redes sociales</p>
+                        <div class="flex flex-wrap gap-2">
+                            <a
+                                v-for="(red, index) in negocio.redes_sociales"
+                                :key="`${red.tipo}-${index}`"
+                                :href="red.url"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="public-social-link"
+                            >
+                                {{ etiquetaRedSocial(red.tipo) }}
+                            </a>
+                        </div>
                     </div>
 
                     <div v-if="negocio.lat && negocio.lng" class="mt-6">
@@ -86,6 +102,7 @@
                             target="_blank"
                             rel="noopener"
                             class="btn-outline text-center"
+                            @click="trackWhatsapp"
                         >
                             WhatsApp
                         </a>
@@ -102,6 +119,8 @@ import { router } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import PublicBackLink from '@/Components/PublicBackLink.vue';
 import MapaNegocio from '@/Components/MapaNegocio.vue';
+import { trackEvent } from '@/lib/analytics';
+import { etiquetaRedSocial, type RedSocialLink } from '@/lib/redesSociales';
 import { useChatStore } from '@/stores/chat';
 import { useLocationStore } from '@/stores/location';
 
@@ -122,6 +141,7 @@ interface NegocioDetail {
     telefono: string | null;
     whatsapp: string | null;
     web: string | null;
+    redes_sociales: RedSocialLink[];
     lat: number | null;
     lng: number | null;
     place_id: string | null;
@@ -143,6 +163,7 @@ const tieneContacto = computed(() =>
     || props.negocio.telefono
     || props.negocio.whatsapp
     || props.negocio.web
+    || props.negocio.redes_sociales.length > 0
 );
 
 function whatsappUrl(numero: string) {
@@ -181,7 +202,18 @@ watch(
     },
 );
 
+function trackWhatsapp() {
+    trackEvent('negocio_whatsapp_click', {
+        slug: props.negocio.slug,
+        destacado: props.negocio.destacado,
+    });
+}
+
 function consultar() {
+    trackEvent('negocio_consulta_chat', {
+        slug: props.negocio.slug,
+        destacado: props.negocio.destacado,
+    });
     chat.enviarMensaje(`Contame más sobre ${props.negocio.nombre}`);
 }
 </script>

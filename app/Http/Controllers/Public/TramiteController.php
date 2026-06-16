@@ -9,7 +9,7 @@ use Inertia\Inertia;
 
 class TramiteController extends Controller
 {
-    private const CATEGORIAS = ['documentación', 'salud', 'trabajo', 'vivienda', 'educación'];
+    private const CATEGORIAS = ['Documentación', 'Salud', 'Trabajo', 'Vivienda', 'Educación'];
 
     public function index(Request $request)
     {

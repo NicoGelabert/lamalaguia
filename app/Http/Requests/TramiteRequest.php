@@ -17,7 +17,7 @@ class TramiteRequest extends FormRequest
             'titulo'    => ['required', 'string', 'max:150'],
             'slug'      => ['required', 'string', 'max:150'],
             'contenido' => ['required', 'string'],
-            'categoria' => ['required', 'string', 'in:documentación,salud,trabajo,vivienda,educación'],
+            'categoria' => ['required', 'string', 'in:Documentación,Salud,Trabajo,Vivienda,Educación'],
             'orden'     => ['nullable', 'integer'],
             'activo'    => ['required', 'boolean'],
         ];

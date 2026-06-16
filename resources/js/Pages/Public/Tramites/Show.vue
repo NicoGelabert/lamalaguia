@@ -36,6 +36,7 @@
 <script setup lang="ts">
 import PublicLayout from '@/Layouts/PublicLayout.vue';
 import PublicBackLink from '@/Components/PublicBackLink.vue';
+import { trackEvent } from '@/lib/analytics';
 import { useChatStore } from '@/stores/chat';
 
 interface TramiteDetail {
@@ -54,6 +55,10 @@ const props = defineProps<{
 const chat = useChatStore();
 
 function consultar() {
+    trackEvent('tramite_consulta_chat', {
+        slug: props.tramite.slug,
+        categoria: props.tramite.categoria,
+    });
     chat.enviarMensaje(`¿Cómo hago el trámite de ${props.tramite.titulo}?`);
 }
 </script>

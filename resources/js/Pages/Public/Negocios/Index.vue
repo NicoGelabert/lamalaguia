@@ -111,11 +111,12 @@ const props = defineProps<{
 
 const ubicacion = useLocationStore();
 
-function paramsBase(): Record<string, number> {
+function buildParams(categoriaId?: number | null): Record<string, number> {
     const params: Record<string, number> = {};
 
-    if (props.categoriaActiva) {
-        params.categoria = props.categoriaActiva;
+    const categoria = categoriaId !== undefined ? categoriaId : props.categoriaActiva;
+    if (categoria) {
+        params.categoria = categoria;
     }
 
     if (ubicacion.activa && ubicacion.lat !== null && ubicacion.lng !== null) {
@@ -127,20 +128,14 @@ function paramsBase(): Record<string, number> {
 }
 
 function filtrar(categoriaId: number | null) {
-    const params = paramsBase();
-
-    if (categoriaId) {
-        params.categoria = categoriaId;
-    }
-
-    router.get(route('negocios.index'), params, {
+    router.get(route('negocios.index'), buildParams(categoriaId), {
         preserveScroll: true,
         preserveState: true,
     });
 }
 
 function recargarConUbicacion() {
-    router.get(route('negocios.index'), paramsBase(), {
+    router.get(route('negocios.index'), buildParams(), {
         preserveScroll: true,
         preserveState: true,
     });

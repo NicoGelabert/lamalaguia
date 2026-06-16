@@ -19,6 +19,7 @@ class Negocio extends Model
         'telefono',
         'whatsapp',
         'web',
+        'redes_sociales',
         'lat',
         'lng',
         'place_id',
@@ -34,6 +35,7 @@ class Negocio extends Model
         'activo' => 'boolean',
         'destacado' => 'boolean',
         'orden_destacado' => 'integer',
+        'redes_sociales' => 'array',
     ];
 
     public function categoria()

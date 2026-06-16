@@ -21,7 +21,7 @@
                         :key="chip.label"
                         type="button"
                         class="hero-chip"
-                        @click="enviarChip(chip.query)"
+                        @click="enviarChip(chip.query, chip.label)"
                     >
                         {{ chip.label }}
                     </button>
@@ -211,6 +211,7 @@
 import { onMounted, watch } from 'vue';
 import { Link, router } from '@inertiajs/vue3';
 import PublicLayout from '@/Layouts/PublicLayout.vue';
+import { trackEvent } from '@/lib/analytics';
 import { useChatStore } from '@/stores/chat';
 import { useLocationStore } from '@/stores/location';
 
@@ -313,7 +314,8 @@ const pasos = [
     },
 ];
 
-function enviarChip(query: string) {
+function enviarChip(query: string, label: string) {
+    trackEvent('hero_chip_click', { label });
     chat.enviarMensaje(query);
 }
 

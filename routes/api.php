@@ -18,7 +18,7 @@ Route::apiResource('categorias-negocio', CategoriaNegocioController::class);
 Route::get('negocios', [NegocioController::class, 'index'])->name('api.negocios.index');
 Route::get('negocios/{negocio}', [NegocioController::class, 'show'])->name('api.negocios.show');
 Route::post('negocios', [NegocioController::class, 'store'])->name('api.negocios.store');
-Route::put('negocios/{negocio}', [NegocioController::class, 'update'])->name('api.negocios.update');
+Route::match(['put', 'post'], 'negocios/{negocio}', [NegocioController::class, 'update'])->name('api.negocios.update');
 Route::delete('negocios/{negocio}', [NegocioController::class, 'destroy'])->name('api.negocios.destroy');
 
 Route::get('eventos', [EventoController::class, 'index'])->name('api.eventos.index');

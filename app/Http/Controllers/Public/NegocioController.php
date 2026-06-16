@@ -100,6 +100,7 @@ class NegocioController extends Controller
                 'telefono' => $negocio->telefono,
                 'whatsapp' => $negocio->whatsapp,
                 'web' => $negocio->web,
+                'redes_sociales' => $negocio->redes_sociales ?? [],
                 'lat' => $negocio->lat ? (float) $negocio->lat : null,
                 'lng' => $negocio->lng ? (float) $negocio->lng : null,
                 'place_id' => $negocio->place_id,
