@@ -229,16 +229,69 @@ import {
     type RedSocialTipo,
 } from '@/lib/redesSociales';
 
+interface NegocioImagenForm {
+    id: number;
+    url: string;
+    orden?: number;
+}
+
+interface NegocioFormState {
+    id?: number;
+    nombre: string;
+    slug: string;
+    descripcion: string;
+    descripcion_corta: string;
+    direccion: string;
+    ciudad: string;
+    telefono: string;
+    whatsapp: string;
+    web: string;
+    redes_sociales: RedSocialLink[];
+    lat: number | null;
+    lng: number | null;
+    place_id: string;
+    activo: boolean;
+    destacado: boolean;
+    orden_destacado: number | null;
+    categoria_negocio_id: number | string | null;
+    logo?: File;
+    logo_url?: string | null;
+    imagenes: NegocioImagenForm[];
+    nuevasImagenes?: File[];
+}
+
 const props = defineProps<{
-    negocio: any;
+    negocio: Partial<NegocioFormState>;
 }>();
 
 const emit = defineEmits(['submit']);
 
-const form = ref({
-    ...props.negocio,
-    redes_sociales: (props.negocio.redes_sociales ?? []) as RedSocialLink[],
-});
+function createFormState(negocio: Partial<NegocioFormState>): NegocioFormState {
+    return {
+        id: negocio.id,
+        nombre: negocio.nombre ?? '',
+        slug: negocio.slug ?? '',
+        descripcion: negocio.descripcion ?? '',
+        descripcion_corta: negocio.descripcion_corta ?? '',
+        direccion: negocio.direccion ?? '',
+        ciudad: negocio.ciudad ?? '',
+        telefono: negocio.telefono ?? '',
+        whatsapp: negocio.whatsapp ?? '',
+        web: negocio.web ?? '',
+        redes_sociales: Array.isArray(negocio.redes_sociales) ? negocio.redes_sociales : [],
+        lat: negocio.lat != null ? Number(negocio.lat) : null,
+        lng: negocio.lng != null ? Number(negocio.lng) : null,
+        place_id: negocio.place_id ?? '',
+        activo: negocio.activo ?? true,
+        destacado: negocio.destacado ?? false,
+        orden_destacado: negocio.orden_destacado ?? null,
+        categoria_negocio_id: negocio.categoria_negocio_id ?? null,
+        logo_url: negocio.logo_url ?? null,
+        imagenes: Array.isArray(negocio.imagenes) ? negocio.imagenes : [],
+    };
+}
+
+const form = ref<NegocioFormState>(createFormState(props.negocio));
 const categorias = ref<{ id: number; nombre: string }[]>([]);
 
 const tiposUsados = computed(() => form.value.redes_sociales.map((red) => red.tipo));
@@ -260,8 +313,8 @@ function agregarRedSocial() {
     form.value.redes_sociales.push({ tipo, url: '' });
 }
 
-function quitarRedSocial(index: number) {
-    form.value.redes_sociales.splice(index, 1);
+function quitarRedSocial(index: number | string) {
+    form.value.redes_sociales.splice(Number(index), 1);
 }
 
 onMounted(async () => {
@@ -295,7 +348,7 @@ function onImagenesChange(e: Event) {
 }
 
 function removeImagen(id: number) {
-    form.value.imagenes = form.value.imagenes.filter((img: any) => img.id !== id);
+    form.value.imagenes = form.value.imagenes.filter((img) => img.id !== id);
 }
 
 function normalizeUrl(url: string): string {
